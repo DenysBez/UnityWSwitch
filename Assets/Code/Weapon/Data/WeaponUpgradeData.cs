@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Linq;
 
 namespace Lesson
 {
@@ -17,16 +18,13 @@ namespace Lesson
         
         public WeaponData GetWeaponData(int level)
         {
-            for (var index = 0; index < _data.Length; index++)
+            var orderedData = _data.OrderByDescending(d => d.Level);
+            foreach (var data in orderedData)
             {
-                WeaponDataByLevel data = _data[index];
-                if (data.Level == level)
-                {
+                if (data.Level <= level)
                     return data.Data;
-                }
             }
-
-            return null; // DZ 
+            return null;
         }
     }
 }

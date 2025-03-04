@@ -8,20 +8,7 @@ namespace Lesson
         [SerializeField] private float _force;
         [SerializeField] private float _shotDelay;
         
-        public float Force
-        {
-            get
-            {
-                return _force;
-            }
-        }
-
-        public float ShotDelay
-        {
-            get
-            {
-                return _shotDelay;
-            }
-        }
+        public float Force => _force;
+        public float ShotDelay => _shotDelay;
     }
 }

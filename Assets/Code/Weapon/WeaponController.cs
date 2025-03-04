@@ -4,13 +4,13 @@ namespace Lesson
 {
     public sealed class WeaponController : MonoBehaviour
     {
-         private WeaponSelector _weaponSelector;
+        private WeaponSelector _weaponSelector;
 
-         private void Start()
-         {
-             Weapon[] weapons = GetComponentsInChildren<Weapon>(true);
-             _weaponSelector = new WeaponSelector(weapons);
-         }
+        private void Start()
+        {
+            Weapon[] weapons = GetComponentsInChildren<Weapon>(true);
+            _weaponSelector = new WeaponSelector(weapons);
+        }
 
         private void Update()
         {

@@ -11,13 +11,7 @@ namespace Lesson
         private bool _isAlive = true;
         private float _maxHp;
 
-        public float MaxHp
-        {
-            get
-            {
-                return _maxHp;
-            }
-        }
+        public float MaxHp => _maxHp;
 
         private void Start()
         {
@@ -26,10 +20,7 @@ namespace Lesson
         
         public bool CanTakeDamage(float damage)
         {
-            if (_isAlive == false)
-            {
-                return false;
-            }
+            if (!_isAlive) return false;
 
             _health -= damage;
 
@@ -45,15 +36,7 @@ namespace Lesson
 
         public bool CanAddHealth(int health)
         {
-            if (_isAlive == false)
-            {
-                return false;
-            }
-
-            if (_health >= _maxHp)
-            {
-                return false;
-            }
+            if (!_isAlive || _health >= _maxHp) return false;
 
             _health += health;
             return true;
@@ -61,21 +44,23 @@ namespace Lesson
 
         private IEnumerator Die()
         {
-            var component = GetComponent<Renderer>();
+            var renderer = GetComponent<Renderer>();
             
-            component.material.color = Color.red;
-            yield return new WaitForSeconds(1.0f);
-            component.material.color = Color.green;
-            yield return new WaitForSeconds(1.0f);
-            component.material.color = Color.red;
-            yield return new WaitForSeconds(1.0f);
-            component.material.color = Color.green;
-            yield return new WaitForSeconds(1.0f);
-            component.material.color = Color.red;
+            yield return FlashColor(renderer, Color.red, 1.0f);
+            yield return FlashColor(renderer, Color.green, 1.0f);
+            yield return FlashColor(renderer, Color.red, 1.0f);
+            yield return FlashColor(renderer, Color.green, 1.0f);
+            yield return FlashColor(renderer, Color.red, 0);
 
             yield return new WaitForSeconds(_lifeTime);
 
             StartCoroutine(Fade());
+        }
+
+        private IEnumerator FlashColor(Renderer renderer, Color color, float waitTime)
+        {
+            renderer.material.color = color;
+            yield return new WaitForSeconds(waitTime);
         }
 
         private IEnumerator Fade()

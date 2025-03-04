@@ -6,12 +6,9 @@ namespace Lesson
     {
         private void OnTriggerEnter(Collider other)
         {
-            if (other.TryGetComponent(out HealthController healthController))
+            if (other.TryGetComponent(out HealthController healthController) && healthController.CanAddHealth(1))
             {
-                if (healthController.CanAddHealth(1))
-                {
-                    Destroy(gameObject);
-                }
+                Destroy(gameObject);
             }
         }
     }

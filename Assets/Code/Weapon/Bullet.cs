@@ -11,10 +11,9 @@ namespace Lesson
         [SerializeField] private BulletProjectorData[] _bulletHoles;
 
         private BulletProjectorHelper _projectorHelper;
-        
         private Rigidbody _rigidbody;
         private float _force = 3.0f;
-        
+
         public bool IsActive { get; private set; }
 
         private void Awake()
@@ -26,24 +25,13 @@ namespace Lesson
 
         private void OnCollisionEnter(Collision other)
         {
-            bool ricochet = TryRicochet();
-            if (ricochet == false)
+            if (!TryRicochet() && other.collider.TryGetComponent(out HealthController health) && health.CanTakeDamage(_damage))
             {
+                _projectorHelper.CreateBulletHole(other.contacts[0].point, other.contacts[0].normal, other.transform);
                 Destroy(gameObject);
             }
-            
-            if (other.collider.TryGetComponent(out HealthController health))
+            else if (other.collider.TryGetComponent(out HealthController healthController))
             {
-                if (health.CanTakeDamage(_damage))
-                {
-                    if (ricochet == false)
-                    {
-                        _projectorHelper.CreateBulletHole(other.contacts[0].point, other.contacts[0].normal, other.transform);
-                    }
-
-                    return;
-                }
-
                 var rigidbody = other.gameObject.GetOrAddRigidbody();
                 rigidbody.AddForce(_rigidbody.velocity * _force, ForceMode.Impulse);
             }
@@ -52,12 +40,10 @@ namespace Lesson
         private bool TryRicochet()
         {
             if (Random.Range(0.0f, 1.0f) < 0.5f)
-            {
                 return false;
-            }
-            
+
             Ray ray = new Ray(transform.position, transform.forward);
-            
+
             if (Physics.Raycast(ray, out RaycastHit hit, 1.0f))
             {
                 Vector3 reflect = Vector3.Reflect(ray.direction, hit.normal);
@@ -90,12 +76,12 @@ namespace Lesson
 
         private IEnumerator Die()
         {
-            while (_lifeTime >= 0.0f)
+            while (_lifeTime > 0.0f)
             {
                 _lifeTime -= 1.0f;
                 yield return new WaitForSeconds(1.0f);
             }
-            
+
             Destroy(gameObject);
         }
     }

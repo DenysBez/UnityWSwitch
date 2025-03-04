@@ -15,15 +15,15 @@ namespace Lesson
         {
             _bulletRoot = new GameObject("BulletRoot").transform;
             _bullets = new Queue<Bullet>(_countInClip);
-            
-            base.Start(); // todo: need for recharge dont move  
+
+            base.Start();   
         }
 
         public override void Recharge()
         {
             for (int i = 0; i < _countInClip; i++)
             {
-                Bullet bullet = Instantiate(_bulletPrefab, _bulletRoot);
+                var bullet = Instantiate(_bulletPrefab, _bulletRoot);
                 bullet.Sleep();
                 _bullets.Enqueue(bullet);
             }
@@ -31,12 +31,9 @@ namespace Lesson
 
         public override void Fire()
         {
-            if (CanShoot == false)
-            {
-                return;
-            }
-            
-            if (_bullets.TryDequeue(out Bullet bullet))
+            if (!CanShoot) return;
+
+            if (_bullets.TryDequeue(out var bullet))
             {
                 bullet.Run(_barrel.forward * Force, _barrel.position);
                 LastShootTime = 0.0f;
@@ -46,7 +43,7 @@ namespace Lesson
         public override void GetInfo()
         {
             base.GetInfo();
-            
+
             Debug.LogError(_countInClip);
         }
     }

@@ -12,44 +12,10 @@ namespace Lesson
         [SerializeField] private float _lightInnerSpotAngle = 7.0f;
         [SerializeField] private float _lightSpotAngle = 30.0f;
 
-        public Material Material
-        {
-            get
-            {
-                return _material;
-            }
-        }
-
-        public float LightRange
-        {
-            get
-            {
-                return _lightRange;
-            }
-        }
-
-        public float LightIntensity
-        {
-            get
-            {
-                return _lightIntensity;
-            }
-        }
-
-        public float LightInnerSpotAngle
-        {
-            get
-            {
-                return _lightInnerSpotAngle;
-            }
-        }
-
-        public float LightSpotAngle
-        {
-            get
-            {
-                return _lightSpotAngle;
-            }
-        }
+        public Material Material => _material;
+        public float LightRange => _lightRange;
+        public float LightIntensity => _lightIntensity;
+        public float LightInnerSpotAngle => _lightInnerSpotAngle;
+        public float LightSpotAngle => _lightSpotAngle;
     }
 }

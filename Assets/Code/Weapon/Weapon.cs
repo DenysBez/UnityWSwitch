@@ -9,7 +9,7 @@ namespace Lesson
         [SerializeField] protected WeaponUpgradeData _upgradeData;
 
         protected float Force { get; private set; }
-        protected bool CanShoot { get; private set; }
+        protected bool CanShoot => _shotDelay <= LastShootTime;
         protected float LastShootTime { get; set; }
 
         private float _shotDelay;
@@ -20,20 +20,16 @@ namespace Lesson
 
             _shotDelay = weaponData.ShotDelay;
             Force = weaponData.Force;
-            
+
             Recharge();
         }
 
         private void Update()
         {
-            CanShoot = _shotDelay <= LastShootTime;
-
-            if (CanShoot)
+            if (!CanShoot)
             {
-                return;
+                LastShootTime += Time.deltaTime;
             }
-
-            LastShootTime += Time.deltaTime;
         }
 
         public abstract void Fire();
@@ -42,12 +38,24 @@ namespace Lesson
 
         public virtual void GetInfo()
         {
-            Debug.LogError(_shotDelay);
+            Debug.Log($"Weapon Shot Delay: {_shotDelay}");
         }
 
         public void SetActive(bool isActive)
         {
             gameObject.SetActive(isActive);
+        }
+
+        public float GetRemainingTimeToShoot()
+        {
+            return Mathf.Max(0f, _shotDelay - LastShootTime);
+        }
+
+        public void UpgradeWeapon()
+        {
+            WeaponData weaponData = _upgradeData.GetWeaponData(_level);
+            _shotDelay = weaponData.ShotDelay;
+            Force = weaponData.Force;
         }
     }
 }

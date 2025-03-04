@@ -11,7 +11,7 @@ namespace Lesson
 
         private Rigidbody _rigidbody;
         private readonly Collider[] _collidedObjects = new Collider[COLLISION_SIZE];
-        private readonly ExplosionFactory _explosionFactory = new ();
+        private static readonly ExplosionFactory _explosionFactory = new(); // Cached static instance
 
         private void Awake()
         {
@@ -22,29 +22,33 @@ namespace Lesson
         {
             _explosionFactory.Create();
             Destroy(gameObject);
+
+            
             float radius = _scale * 0.5f;
             Vector3 center = other.contacts[0].point;
-            int countCollied = Physics.OverlapSphereNonAlloc(center, radius, _collidedObjects);
-
-            for (int i = 0; i < countCollied; i++)
+            int countCollided = Physics.OverlapSphereNonAlloc(center, radius, _collidedObjects);
+            
+            for (int i = 0; i < countCollided; i++)
             {
                 Collider collidedObject = _collidedObjects[i];
 
                 if (collidedObject.TryGetComponent(out HealthController healthController))
                 {
-                    if (healthController.CanTakeDamage(healthController.MaxHp))
-                    {
-                        return;
-                    }
+                    if (!healthController.CanTakeDamage(healthController.MaxHp)) continue;
 
-                    Rigidbody rigidbody = RigidbodyHelper.GetOrAddRigidbody(healthController.gameObject);
-                    rigidbody.AddExplosionForce(_powerExplosion, center, radius);
+                    ApplyExplosionForce(healthController, center, radius);
                 }
             }
         }
 
+        private void ApplyExplosionForce(HealthController healthController, Vector3 explosionCenter, float explosionRadius)
+        {            
+            Rigidbody rigidbody = RigidbodyHelper.GetOrAddRigidbody(healthController.gameObject);
+            rigidbody.AddExplosionForce(_powerExplosion, explosionCenter, explosionRadius);
+        }
+
         public void Run(Vector3 path)
-        {
+        {         
             transform.SetParent(null);
             _rigidbody.WakeUp();
             _rigidbody.isKinematic = false;
