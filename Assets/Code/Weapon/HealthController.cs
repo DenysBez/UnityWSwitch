@@ -8,6 +8,9 @@ namespace Lesson
         [SerializeField] private float _health = 3.0f;
         [SerializeField] private float _lifeTime = 5.0f;
 
+        private AudioSource _audioSourceDamage;
+        private AudioSource _audioSourceBlast;
+
         private bool _isAlive = true;
         private float _maxHp;
 
@@ -16,13 +19,60 @@ namespace Lesson
         private void Start()
         {
             _maxHp = _health;
+
+            GameObject audioCube = GameObject.Find("AudioCube");
+
+            if (audioCube == null)
+            {
+                Debug.LogError("AudioCube not found.");
+            }
+            else
+            {
+                AudioSource[] audioSources = audioCube.GetComponents<AudioSource>();
+
+                if (audioSources.Length == 0)
+                {
+                    Debug.LogError("AudioCube does not have any AudioSource components.");
+                    return;
+                }
+                
+                foreach (var audioSource in audioSources)
+                {
+                    if (audioSource.clip != null)
+                    {
+                        if (audioSource.clip.name == "shot_damage")
+                        {
+                            _audioSourceDamage = audioSource;
+                        }
+                        else if (audioSource.clip.name == "blast")
+                        {
+                            _audioSourceBlast = audioSource;
+                        }
+                    }
+                }
+
+                if (_audioSourceDamage == null)
+                {
+                    Debug.LogError("Damage AudioSource with the specified clip not found in AudioCube.");
+                }
+
+                if (_audioSourceBlast == null)
+                {
+                    Debug.LogError("Blast AudioSource with the specified clip not found in AudioCube.");
+                }
+            }
         }
-        
+
         public bool CanTakeDamage(float damage)
         {
             if (!_isAlive) return false;
 
             _health -= damage;
+
+            if (_audioSourceDamage && _audioSourceDamage.clip)
+            {
+                _audioSourceDamage.Play();
+            }
 
             if (_health <= 0)
             {
@@ -45,12 +95,17 @@ namespace Lesson
         private IEnumerator Die()
         {
             var renderer = GetComponent<Renderer>();
-            
+
             yield return FlashColor(renderer, Color.red, 1.0f);
             yield return FlashColor(renderer, Color.green, 1.0f);
             yield return FlashColor(renderer, Color.red, 1.0f);
             yield return FlashColor(renderer, Color.green, 1.0f);
             yield return FlashColor(renderer, Color.red, 0);
+
+            if (_audioSourceBlast && _audioSourceBlast.clip)
+            {
+                _audioSourceBlast.Play();
+            }
 
             yield return new WaitForSeconds(_lifeTime);
 
@@ -75,7 +130,7 @@ namespace Lesson
                     yield return new WaitForSeconds(0.1f);
                 }
             }
-            
+
             Destroy(gameObject);
         }
     }

@@ -60,6 +60,7 @@
     <Compile Include="Assets\Code\Weapon\Gun.cs" />
     <Compile Include="Assets\Code\MedicineChest.cs" />
     <Compile Include="Assets\Code\Weapon\HealthController.cs" />
+    <Compile Include="Assets\Code\Sound\FootstepSound.cs" />
     <Compile Include="Assets\Code\Weapon\Bullet.cs" />
     <Compile Include="Assets\Code\Weapon\ExplosionFactory.cs" />
     <Compile Include="Assets\Code\Weapon\Explosion.cs" />

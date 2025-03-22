@@ -10,13 +10,15 @@ namespace Lesson
 
         private Transform _bulletRoot;
         private Queue<Bullet> _bullets;
+        private AudioSource _audioSource;
 
         protected override void Start()
         {
             _bulletRoot = new GameObject("BulletRoot").transform;
             _bullets = new Queue<Bullet>(_countInClip);
+            _audioSource = GetComponent<AudioSource>();
 
-            base.Start();   
+            base.Start();
         }
 
         public override void Recharge()
@@ -37,6 +39,10 @@ namespace Lesson
             {
                 bullet.Run(_barrel.forward * Force, _barrel.position);
                 LastShootTime = 0.0f;
+                if (_audioSource)
+                {
+                    _audioSource.Play();
+                }
             }
         }
 
