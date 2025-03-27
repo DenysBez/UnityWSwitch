@@ -4,11 +4,22 @@ namespace Lesson
 {
     public class GameManager : MonoBehaviour
     {
-        [SerializeField] private GameObject audioHolder;
+        [SerializeField] private AudioSource _audioSourceDamage;
+        [SerializeField] private AudioSource _audioSourceBlast;
+
+        private static GameManager _instance;
 
         private void Awake()
         {
-            HealthController.SetAudioHolder(audioHolder);
+            if (_instance == null)
+            {
+                _instance = this;
+                HealthController.SetAudioSources(_audioSourceDamage, _audioSourceBlast);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

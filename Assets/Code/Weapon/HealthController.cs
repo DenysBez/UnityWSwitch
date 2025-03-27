@@ -8,7 +8,6 @@ namespace Lesson
         [SerializeField] private float _health = 3.0f;
         [SerializeField] private float _lifeTime = 5.0f;
 
-        private static GameObject _audioHolder;
         private static AudioSource _audioSourceDamage;
         private static AudioSource _audioSourceBlast;
 
@@ -17,32 +16,20 @@ namespace Lesson
 
         public float MaxHp => _maxHp;
 
-        public static void SetAudioHolder(GameObject holder)
+        // Static method to assign the audio sources
+        public static void SetAudioSources(AudioSource damageAudioSource, AudioSource blastAudioSource)
         {
-            if (_audioHolder != null) return; // Already assigned
-            _audioHolder = holder;
+            _audioSourceDamage = damageAudioSource;
+            _audioSourceBlast = blastAudioSource;
 
-            if (_audioHolder != null)
+            if (_audioSourceDamage == null)
             {
-                AudioSource[] audioSources = _audioHolder.GetComponents<AudioSource>();
-                foreach (var audioSource in audioSources)
-                {
-                    if (audioSource.clip != null)
-                    {
-                        if (audioSource.clip.name == "shot_damage")
-                        {
-                            _audioSourceDamage = audioSource;
-                        }
-                        else if (audioSource.clip.name == "blast")
-                        {
-                            _audioSourceBlast = audioSource;
-                        }
-                    }
-                }
+                Debug.LogError("Damage AudioSource is not assigned.");
             }
-            else
+
+            if (_audioSourceBlast == null)
             {
-                Debug.LogError("AudioHolder is not assigned in GameManager.");
+                Debug.LogError("Blast AudioSource is not assigned.");
             }
         }
 
@@ -57,6 +44,7 @@ namespace Lesson
 
             _health -= damage;
 
+            // Play damage sound using the audioSourceDamage
             _audioSourceDamage?.Play();
 
             if (_health <= 0)
@@ -87,6 +75,7 @@ namespace Lesson
             yield return FlashColor(renderer, Color.green, 1.0f);
             yield return FlashColor(renderer, Color.red, 0);
 
+            // Play blast sound using the audioSourceBlast
             _audioSourceBlast?.Play();
 
             yield return new WaitForSeconds(_lifeTime);
