@@ -51,6 +51,7 @@
     <Compile Include="Assets\Code\Weapon\WeaponController.cs" />
     <Compile Include="Assets\Code\BrickComponent.cs" />
     <Compile Include="Assets\Code\Weapon\BulletProjectorHelper.cs" />
+    <Compile Include="Assets\Code\Weapon\GameManager.cs" />
     <Compile Include="Assets\Code\Weapon\WeaponSelector.cs" />
     <Compile Include="Assets\Content\Stellar Sky\Demo\CameraController.cs" />
     <Compile Include="Assets\Content\Starter Assets\TutorialInfo\Scripts\Readme.cs" />

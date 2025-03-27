@@ -1,63 +1,50 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace Lesson.Sound
 {
     public class FootstepSound : MonoBehaviour
     {
+        [SerializeField] private GameObject footstepAudioObject;
         private AudioSource footstepAudio;
         private Vector3 lastPosition;
-        private Coroutine footstepCoroutine;
+
+        [SerializeField] private float stepInterval = 0.5f;
+        private float nextStepTime = 0f;
 
         void Start()
         {
-            lastPosition = transform.position;
-
-            // Get the correct AudioSource from Main Camera
-            AudioSource[] audioSources = Camera.main.GetComponents<AudioSource>();
-            foreach (AudioSource source in audioSources)
+            if (footstepAudioObject != null)
             {
-                if (source.clip != null && source.clip.name == "steps")
-                {
-                    footstepAudio = source;
-                    break;
-                }
+                footstepAudio = footstepAudioObject.GetComponent<AudioSource>();
             }
+
+            if (footstepAudio == null || footstepAudio.clip == null)
+            {
+                Debug.LogError("FootstepSound: No valid AudioSource or AudioClip assigned");
+            }
+
+            lastPosition = transform.position;
         }
 
         void Update()
         {
             float distanceMoved = (transform.position - lastPosition).magnitude;
+            bool isMoving = distanceMoved > 0.01f;
 
-            if (distanceMoved > 0.01f) 
+            if (isMoving && Time.time >= nextStepTime)
             {
-                if (footstepCoroutine == null)
-                {
-                    footstepCoroutine = StartCoroutine(PlayFootstepLoop());
-                }
-            }
-            else
-            {
-                if (footstepCoroutine != null)
-                {
-                    StopCoroutine(footstepCoroutine);
-                    footstepCoroutine = null;
-                    footstepAudio.Stop();
-                }
+                PlayFootstep();
+                nextStepTime = Time.time + stepInterval;
             }
 
             lastPosition = transform.position;
         }
 
-        IEnumerator PlayFootstepLoop()
+        private void PlayFootstep()
         {
-            while (true)
+            if (!footstepAudio.isPlaying)
             {
-                if (!footstepAudio.isPlaying)
-                {
-                    footstepAudio.Play();
-                }
-                yield return new WaitForSeconds(footstepAudio.clip.length);
+                footstepAudio.Play();
             }
         }
     }

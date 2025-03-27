@@ -8,34 +8,23 @@ namespace Lesson
         [SerializeField] private float _health = 3.0f;
         [SerializeField] private float _lifeTime = 5.0f;
 
-        private AudioSource _audioSourceDamage;
-        private AudioSource _audioSourceBlast;
+        private static GameObject _audioHolder;
+        private static AudioSource _audioSourceDamage;
+        private static AudioSource _audioSourceBlast;
 
         private bool _isAlive = true;
         private float _maxHp;
 
         public float MaxHp => _maxHp;
 
-        private void Start()
+        public static void SetAudioHolder(GameObject holder)
         {
-            _maxHp = _health;
+            if (_audioHolder != null) return; // Already assigned
+            _audioHolder = holder;
 
-            GameObject audioCube = GameObject.Find("AudioCube");
-
-            if (audioCube == null)
+            if (_audioHolder != null)
             {
-                Debug.LogError("AudioCube not found.");
-            }
-            else
-            {
-                AudioSource[] audioSources = audioCube.GetComponents<AudioSource>();
-
-                if (audioSources.Length == 0)
-                {
-                    Debug.LogError("AudioCube does not have any AudioSource components.");
-                    return;
-                }
-                
+                AudioSource[] audioSources = _audioHolder.GetComponents<AudioSource>();
                 foreach (var audioSource in audioSources)
                 {
                     if (audioSource.clip != null)
@@ -50,17 +39,16 @@ namespace Lesson
                         }
                     }
                 }
-
-                if (_audioSourceDamage == null)
-                {
-                    Debug.LogError("Damage AudioSource with the specified clip not found in AudioCube.");
-                }
-
-                if (_audioSourceBlast == null)
-                {
-                    Debug.LogError("Blast AudioSource with the specified clip not found in AudioCube.");
-                }
             }
+            else
+            {
+                Debug.LogError("AudioHolder is not assigned in GameManager.");
+            }
+        }
+
+        private void Start()
+        {
+            _maxHp = _health;
         }
 
         public bool CanTakeDamage(float damage)
@@ -69,10 +57,7 @@ namespace Lesson
 
             _health -= damage;
 
-            if (_audioSourceDamage && _audioSourceDamage.clip)
-            {
-                _audioSourceDamage.Play();
-            }
+            _audioSourceDamage?.Play();
 
             if (_health <= 0)
             {
@@ -102,10 +87,7 @@ namespace Lesson
             yield return FlashColor(renderer, Color.green, 1.0f);
             yield return FlashColor(renderer, Color.red, 0);
 
-            if (_audioSourceBlast && _audioSourceBlast.clip)
-            {
-                _audioSourceBlast.Play();
-            }
+            _audioSourceBlast?.Play();
 
             yield return new WaitForSeconds(_lifeTime);
 
